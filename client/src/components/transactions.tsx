@@ -4,13 +4,24 @@ type TransactionRowProps = {
 	transaction: Transaction
 }
 
-export function TransactionRow({transaction}: TransactionRowProps) {
-	return ( 
-		<tr>
-			<td>{transaction.accountId}</td>
-			<td>{transaction.amount}</td>
-			<td>{transaction.counterparty}</td>
-			<td>{transaction.categoriy}</td>
-		</tr>
-	)	
+export function TransactionTable({transactions}: {transactions: Transaction[]}) {
+	return (
+		<table>
+			<thead>
+				<tr><th>Account</th><th>Amount</th><th>Counterparty</th><th>Date</th><th>Category</th></tr>
+			</thead>
+			<tbody>
+				{transactions.map(tx => (
+					<tr key={tx.transactionId}>
+						<td>{tx.accountId}</td>
+						<td>{tx.transactionId}</td>
+						<td>{tx.amount}</td>
+						<td>{tx.counterparty}</td>
+						<td>{tx.date}</td>
+						<td>{tx.category}</td>
+					</tr>))}
+			</tbody>
+
+		</table>
+	)
 }

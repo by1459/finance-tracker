@@ -1,7 +1,8 @@
 export type Transaction = {
+	transactionId: string,
 	accountId: string,
 	amount: number,
 	counterparty: string,
 	date: number,
-	categoriy: string
+	category: string
 }
