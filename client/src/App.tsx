@@ -1,9 +1,20 @@
+import { useState } from 'react';
 import { TransactionTable } from './components/transactions.tsx'
 import type { Transaction } from './types'
 
-const TRANSACTIONS: Transaction[] = [
-	{ transactionId: 'tsx1', accountId: 'acc_1', amount: 1, counterparty: "Tjs", date: 1, category: 'groceries' }
-]
 export function App() {
-	return (<TransactionTable transactions={TRANSACTIONS}/>)
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+
+  async function getTransactions() {
+    const res = await fetch('/api/get_transaction')
+    const data = await res.json()
+    setTransactions([data])
+  }
+
+  return (
+    <>
+      <button onClick={getTransactions}>Load</button>
+      <TransactionTable transactions={transactions} />
+    </>
+  )
 }
