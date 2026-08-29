@@ -1,13 +1,17 @@
+import os
+
+import plaid
 from fastapi import FastAPI
-from pydantic import BaseModel
-from pydantic import alias_generators
+from plaid.api import plaid_api
+from pydantic import BaseModel, ConfigDict, alias_generators
 from pydantic.alias_generators import to_camel
-from pydantic import ConfigDict
 
 app = FastAPI()
 
+
 class CamelModel(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
 
 class Transaction(CamelModel):
     transaction_id: str
@@ -20,7 +24,15 @@ class Transaction(CamelModel):
 
 @app.get("/api/get_transaction")
 def get_transaction() -> Transaction:
-    return Transaction(transaction_id="1", account_id="2", amount=20, counterparty="hello", date=2, category="greetings")
+    return Transaction(
+        transaction_id="1",
+        account_id="2",
+        amount=20,
+        counterparty="hello",
+        date=2,
+        category="greetings",
+    )
+
 
 def main():
     print("Hello from server!")
