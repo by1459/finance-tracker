@@ -27,6 +27,7 @@ if PLAID_ENV == "sandbox":
 if PLAID_ENV == "production":
     host = plaid.Environment.Production
 
+access_token = None
 configuration = plaid.Configuration(
     host=host,
     api_key={
@@ -57,17 +58,38 @@ class LinkTokenResponse(CamelModel):
     link_token: str
 
 
+class ExchangePublicTokenRequest(CamelModel):
+    public_token: str
+
+
+class ExchangePublicTokenResponse(CamelModel):
+    item_id: str
+
+
 @app.post("/api/create_link_token")
 def create_link_token() -> LinkTokenResponse:
-    request = LinkTokenCreateRequest(
+    link_request = LinkTokenCreateRequest(
         products=[Products("transactions")],
         client_name="Brian's very cool test app",
         country_codes=[CountryCode("US")],
         language="en",
         user=LinkTokenCreateRequestUser(client_user_id=USER),
     )
-    response = plaid_client.link_token_create(request)
+    response = plaid_client.link_token_create(link_request)
     return response.to_dict()
+
+
+@app.post("/api/exchange_public_token")
+def exchange_public_token(
+    request: ExchangePublicTokenRequest,
+) -> ExchangePublicTokenResponse:
+    global access_token
+    public_token = request.public_token
+    pt_exchange_req = ItemPublicTokenExchangeRequest(public_token=public_token)
+    response = plaid_client.item_public_token_exchange(pt_exchange_req)
+    access_token = response["access_token"]
+    item_id = response["item_id"]
+    return ExchangePublicTokenResponse(item_id=item_id)
 
 
 @app.get("/api/get_transaction")
